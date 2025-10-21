@@ -1,24 +1,18 @@
 import chalk from "chalk";
-import express from "express";
+import express, { response } from "express";
 import axios from "axios";
 import figlet from "figlet";
+import dotenv from "dotenv";
 import bodyParser from "body-parser";
+
+dotenv.config();
+console.log(process.env.PORT);
+const port = process.env.PORT;
 const log = console.log;
+
 const app = express();
 
 app.use(bodyParser.json());
-
-app.listen(3000, () => {
-  log(
-    chalk.bgBlack(
-      chalk.bold(
-        chalk.red("Server"),
-        chalk.blue("is"),
-        chalk.underline("running")
-      )
-    )
-  );
-});
 
 app.get("/", async (request, response) => {
   const googleData = async () => {
@@ -30,12 +24,7 @@ app.get("/", async (request, response) => {
   googleData();
 });
 
-const students = [];
-
-app.get("/students/male", async (request, response) => {
-  const maleStudents = students.filter((student) => student.gender === "male");
-  response.send(maleStudents);
-});
+let students = [];
 
 app.get("/students", async (request, response) => {
   response.send(students);
@@ -47,28 +36,71 @@ app.post("/students", async (req, res) => {
 
   console.log("BEFORE", before);
   if (before.length === 0) {
-    students.push(req.body);
+    students.push(...req.body);
     res.status(200).send(students).end();
   } else {
-    res.status(409).send({ message: "error " });
+    res.status(409).send({ message: "error" });
   }
 });
 
-app.post("/students/male", async (req, res) => {
-  console.log(req.body);
-  const before = students.filter((student) => student.phone === req.body.phone);
+app.get("/students/phone", async (req, res) => {
+  response.send(students);
+});
 
-  console.log("BEFORE", before);
-  if (before.length === 0) {
-    if (req.body.gender === "male") {
-      students.push(req.body);
-      res.status(200).send(students).end();
-    } else {
-      res
-        .status(400)
-        .send({ message: "Only male students can be added to this endpoint" });
-    }
+app.patch("/students/phone", async (req, res) => {
+  const userPhone = req.body.phone;
+  const { name, age, Hobby, gender } = req.body;
+
+  console.log("DUGAAR BOLON NAS", userPhone, age);
+
+  const student = students.find((student) => student.phone === userPhone);
+
+  console.log(students);
+
+  if (student) {
+    if (age) student.age = age;
+    if (name) student.name = name;
+    if (gender) student.gender = gender;
+    if (Hobby) student.Hobby = Hobby;
+    res.send(students);
   } else {
-    res.status(409).send({ message: "error " });
+    res.status(404).send("tani oruulsan dugaar ashiglaltand bhgu bn");
   }
+});
+
+// app.delete("/students/phone", async (req, res) => {
+//   const userPhone = req.params.phone;
+//   students = students.filter((student) => student.phone != userPhone);
+//   console.log(students);
+//   return res.send(students).end;
+// });
+
+app.get("/students/male", async (request, response) => {
+  const maleStudents = students.filter((student) => student.gender === "male");
+  if (maleStudents.length === 0) {
+    response.status(409).send({ message: "error" });
+  } else {
+    response.send(maleStudents);
+  }
+});
+
+app.get("/students/female", async (request, response) => {
+  const female = students.filter((student) => student.gender === "female");
+  if (female.length === 0) {
+    response.send(female);
+  } else {
+    response.status(409).send({ message: "error" });
+  }
+});
+
+app.listen(port, () => {
+  log(
+    chalk.bgBlack(
+      chalk.bold(
+        chalk.red("Server"),
+        chalk.blue("is"),
+        chalk.underline("running")
+      )
+    ) + " http://localhost:3000/"
+  );
 });
