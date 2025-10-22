@@ -68,12 +68,18 @@ app.patch("/students/phone", async (req, res) => {
   }
 });
 
-// app.delete("/students/phone", async (req, res) => {
-//   const userPhone = req.params.phone;
-//   students = students.filter((student) => student.phone != userPhone);
-//   console.log(students);
-//   return res.send(students).end;
-// });
+app.delete("/students/:phone", async (req, res) => {
+  const phone = req.params.phone;
+  const originalLength = students.length;
+  students = students.filter((student) => student.phone !== phone);
+  console.log(students);
+
+  if (students.length < originalLength) {
+    return res.send(students);
+  } else {
+    return res.status(404).send({ message: "no student found " });
+  }
+});
 
 app.get("/students/male", async (request, response) => {
   const maleStudents = students.filter((student) => student.gender === "male");
