@@ -93,9 +93,9 @@ app.get("/students/male", async (request, response) => {
 app.get("/students/female", async (request, response) => {
   const female = students.filter((student) => student.gender === "female");
   if (female.length === 0) {
-    response.send(female);
-  } else {
     response.status(409).send({ message: "error" });
+  } else {
+    response.send(female);
   }
 });
 
