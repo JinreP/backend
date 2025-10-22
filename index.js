@@ -4,6 +4,8 @@ import axios from "axios";
 import figlet from "figlet";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
+import { connectDB } from "./db.js";
+import { createUser } from "./src/controllers/user.js";
 
 dotenv.config();
 console.log(process.env.PORT);
@@ -26,22 +28,29 @@ app.get("/", async (request, response) => {
 
 let students = [];
 
+app.post("/students", createUser);
+
 app.get("/students", async (request, response) => {
   response.send(students);
 });
 
-app.post("/students", async (req, res) => {
-  console.log(req.body);
-  const before = students.filter((student) => student.phone === req.body.phone);
-
-  console.log("BEFORE", before);
-  if (before.length === 0) {
-    students.push(...req.body);
-    res.status(200).send(students).end();
-  } else {
-    res.status(409).send({ message: "error" });
-  }
+app.get("/students/:gender/:name", async (request, response) => {
+  const { gender, name } = req.body;
+  
 });
+
+// app.post("/students", async (req, res) => {
+//   console.log(req.body);
+//   const before = students.filter((student) => student.phone === req.body.phone);
+
+//   console.log("BEFORE", before);
+//   if (before.length === 0) {
+//     students.push(...req.body);
+//     res.status(200).send(students).end();
+//   } else {
+//     res.status(409).send({ message: "error" });
+//   }
+// });
 
 app.get("/students/phone", async (req, res) => {
   response.send(students);
@@ -100,6 +109,7 @@ app.get("/students/female", async (request, response) => {
 });
 
 app.listen(port, () => {
+  connectDB();
   log(
     chalk.bgBlack(
       chalk.bold(
