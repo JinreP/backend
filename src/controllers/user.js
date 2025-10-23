@@ -21,7 +21,7 @@ export const createUser = async (req, res) => {
   }
 };
 
-export const getUser = async (req, res) => {
+export const getUsers = async (req, res) => {
   try {
     const result = await User.find();
     console.log(result);
@@ -34,20 +34,32 @@ export const getUser = async (req, res) => {
 
 export const getUserById = async (req, res) => {
   try {
-    const result = await User.findById({
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password,
-      hobby: req.body.hobby,
-      phone: req.body.phone,
-      gender: req.body.gender,
-      age: req.body.age,
-    });
+    const { id } = req.params;
+    const result = await User.findById(id);
     console.log(result);
-
     res.send(result);
   } catch (error) {
     console.error(error);
     res.send(error);
+  }
+};
+
+export const updateUserById = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findByIdAndUpdate(userId, req.body);
+    res.send({ user });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteUserById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    
+  } catch (error) {
+    console.error(error);
   }
 };
