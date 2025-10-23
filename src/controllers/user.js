@@ -57,13 +57,14 @@ export const updateUserById = async (req, res) => {
 
 export const deleteUserById = async (req, res) => {
   try {
-    const id = await deleteUserById(req.params.id);
-    if (!id) {
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (!deletedUser) {
       return res.status(404).send("tiim hun bhgui baina");
     } else {
-      res.send(id, "deleted");
+      res.send({ message: "User deleted ", user: deletedUser });
     }
   } catch (error) {
     console.error(error);
+    res.send({ error: "Failed to delete user" });
   }
 };
